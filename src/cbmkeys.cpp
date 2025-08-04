@@ -23,6 +23,10 @@ static void PinReadRowsInColumn(uint8_t colnum, uint8_t *row_bitmap) {
     PinSetFloat(cbm_pin);
 }
 
+void InitKeyStates(void) {
+    memset(key_states, 0, sizeof(key_states));
+}
+
 void ReadKeys(void) {
     for (uint8_t col_num = 0; col_num < kNumCols; col_num++) {
         PinReadRowsInColumn(col_num, &keyboard_matrix[col_num]);
@@ -67,4 +71,20 @@ void DebounceKeys(void) {
         DebounceKey(col_num, 7);
         DebounceKey(kRestoreCol, 0);
     }
+}
+
+bool CheckSwapperComboActive(void) {
+    return key_states[kCtrlKeyCol][kCtrlKeyRow].current_state && key_states[kCbmKeyCol][kCbmKeyRow].current_state;
+}
+
+/* Reports leading edge trigger of swapper trigger */
+bool CheckSwapperStateChanged(void) {
+    static bool swapper_combo = false;
+    static bool last_swapper_combo = false;
+    static bool leading_edge_trigger = false;
+
+    swapper_combo = CheckSwapperComboActive();
+    leading_edge_trigger =  (swapper_combo && !last_swapper_combo);
+    last_swapper_combo = swapper_combo;
+    return leading_edge_trigger;
 }

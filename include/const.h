@@ -24,4 +24,8 @@
 #define kCtrlKeyCol 0
 #define kCtrlKeyRow 2
 
+// LED
+#define kHiLed 100
+#define kLoLed 10
+
 #endif //CONST_H

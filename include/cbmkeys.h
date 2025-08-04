@@ -16,7 +16,9 @@ typedef struct {
 extern KeyState key_states[kNumCols][kNumRows];
 extern KeyState restore_state;
 
+void InitKeyStates(void);
 void ReadKeys(void);
 void DebounceKeys(void);
-
+bool CheckSwapperComboActive(void);
+bool CheckSwapperStateChanged(void);
 #endif //CBMKEYS_H

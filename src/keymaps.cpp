@@ -1,8 +1,7 @@
 #include <Keyboard.h>
 #include "keymaps.h"
 // Map keys to expected keys on host that correspond to VICE's POSITIONAL keymap
-// kNumCols + 1 to handle RESTORE key which is not part of key scanning
-const uint8_t vice_pos_key_map[kNumCols+1][kNumRows] = {
+const uint8_t vice_pos_key_map[kNumCols+kRestoreColumn][kNumRows] = {
     { '1', '`', KEY_TAB, KEY_ESC, 0x20, KEY_LEFT_CTRL, 'q', '2' },
     { '3', 'w', 'a', KEY_LEFT_SHIFT, 'z', 's', 'e', '4' },
     { '5', 'r', 'd', 'x', 'c', 'f', 't', '6' },
@@ -15,7 +14,7 @@ const uint8_t vice_pos_key_map[kNumCols+1][kNumRows] = {
 };
 
 // Keymap for joystick mode
-const uint8_t vice_pos_key_map_joy[kNumCols+1][kNumRows] = {
+const uint8_t vice_pos_key_map_joy[kNumCols+kRestoreColumn][kNumRows] = {
     { 0, 0, KEY_TAB, 0, 0, KEY_LEFT_CTRL, 0, 0 },
     { 0, KEY_KP_7, 0, 0, 0, KEY_KP_4, KEY_KP_8, 0 },
     { 0, KEY_KP_9, KEY_KP_2, KEY_KP_1, KEY_KP_3, KEY_KP_6, 0, 0 },

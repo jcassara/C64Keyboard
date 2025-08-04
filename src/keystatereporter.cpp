@@ -1,4 +1,4 @@
-#include "../include/keystatereporter.h"
+#include "keystatereporter.h"
 #include "const.h"
 #include "cbmkeys.h"
 #include "Keyboard.h"
@@ -24,4 +24,8 @@ void ReportKeyStateChange(uint8_t col_num, uint8_t row_num) {
         }
         ptr_key_state->last_state = ptr_key_state->current_state;
     }
+}
+
+void ReportReleseAllKeys(void) {
+    Keyboard.releaseAll();
 }
