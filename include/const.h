@@ -28,4 +28,7 @@
 #define kHiLed 100
 #define kLoLed 10
 
+// Swapper Hold Time
+#define kSwapTimerMs 250
+
 #endif //CONST_H

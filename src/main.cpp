@@ -5,12 +5,30 @@
 #include "const.h"
 #include "keymaps.h"
 #include "keystatereporter.h"
-#include "timer.h"
 
-Timer swapper_timer;
+/*MIT License
+ * Copyright (c) 2025 Joe Cassara
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
-/*
- * DoPowerLedStartup
+/* DoPowerLedStartup
  * Fade the power LED with a small delay for the aesthetic
  */
 void DoPowerLedStartup(void) {
@@ -22,81 +40,22 @@ void DoPowerLedStartup(void) {
   analogWrite(kPowerLedArduinoPin, kHiLed);
 }
 
-/*
- * setup
+/* setup
  * Initializes the system
  */
 void setup() {
   InitKeyStates();
   PinConfigurePins();
   DoPowerLedStartup();
+#ifdef DEBUG
   Serial.begin(57600);
   Serial.println("READY");
+#endif
 }
 
-typedef enum {
-  kIdle,
-  kWaitingForTimer,
-  kSwapState
-} SwapperState;
-
-#define kSwapTimerMs 250
-void HandleModeSwapper(void) {
-
-  // keyboard mode
-  static bool mode_state = false;
-
-  // combo press
-  static SwapperState swapper_state = kIdle;
-
-  switch (swapper_state) {
-    case kIdle : {
-      if (CheckSwapperStateChanged()) {
-        swapper_state = kWaitingForTimer;
-        TimerCreate(&swapper_timer, kSwapTimerMs);
-      }
-      break;
-    }
-    case kWaitingForTimer : {
-      if (!CheckSwapperComboActive()) {
-        TimerReset(&swapper_timer);
-        swapper_state = kIdle;
-      } else {
-        if (TimerIsDone(&swapper_timer)) {
-          swapper_state = kSwapState;
-          TimerDisable(&swapper_timer);
-          mode_state = !mode_state;
-        }
-      }
-      break;
-    }
-    case kSwapState : {
-      if (mode_state) {
-        current_keymap = vice_pos_key_map_joy;
-        analogWrite(kPowerLedArduinoPin, kLoLed);
-        ReportReleseAllKeys();
-      } else {
-        current_keymap = vice_pos_key_map;
-        analogWrite(kPowerLedArduinoPin, kHiLed);
-        ReportReleseAllKeys();
-      }
-      swapper_state = kIdle;
-      break;
-    }
-    default: {
-    }
-  }
-}
-
-void HandleKeyStateChanges(void) {
-  for (uint8_t col_num = 0; col_num < kNumCols; col_num++) {
-    for (uint8_t row_num = 0; row_num < kNumRows; row_num++) {
-      ReportKeyStateChange(col_num, row_num);
-    }
-  }
-  ReportKeyStateChange(kRestoreCol, 0);
-}
-
+/* loop
+ * Superloop for scanning, debouncing, reporting, and handling mode swapper.
+ */
 void loop() {
   ReadKeys();
   DebounceKeys();

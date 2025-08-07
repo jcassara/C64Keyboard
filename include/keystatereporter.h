@@ -5,4 +5,6 @@
 
 void ReportKeyStateChange(uint8_t col_num, uint8_t row_num);
 void ReportReleseAllKeys(void);
+void HandleModeSwapper(void);
+void HandleKeyStateChanges(void);
 #endif //KEYSTATEREPORTER_H
